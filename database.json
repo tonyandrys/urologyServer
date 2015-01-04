@@ -1,0 +1,14 @@
+{
+	"dev": {
+		"driver": "mysql",
+		"user": "root",
+		"database": "tutorial",
+		"password": "AcrossinG1492"
+	},
+
+	"production": {
+		"driver": "mysql",
+		"user": "root",
+		"database": "myapp"
+	}
+}

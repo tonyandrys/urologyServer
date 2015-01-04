@@ -1,0 +1,70 @@
+// Survey JSON Model
+
+{
+	metadata: {
+		mapp_id: 'str',
+		survey_start: 'datetime',
+		survey_end: 'datetime',
+	},
+
+	results: {
+		// Screen 1 - In general, how would you currently rate your pain?
+		pain_overall: 0,
+
+		// Screen 2 - Rate your pain for each part of the body...
+		pain_assessment: {
+			head: 0,
+			body: 0,
+			perineum: 0,
+			lower_extremity: 0,
+			upper_extremity: 0,
+			back: 0,
+		},
+
+		// Screen 3 - Is your pain affecting your daily activities?
+		bother_value: 0,
+
+		// Screen 4 - How have you managed your pain today?
+		pain_management: [
+			'prescription-medication' : {
+				'vicodin': true,
+				'oxycontin': false,
+				'percocet': true,
+			},
+
+			'otc-medication': {
+				'asprin': false,
+				'ibuprofen': true,
+			},
+
+			'relaxation-techniques': {
+				'technique_a': true,
+				'technique_b': false,
+			},
+
+			'other-techniques': {
+				'other_technique_a': true,
+				'other_technique_b': false,
+			},
+		],
+
+		// Screen 5 - Are you having any urinary/voiding symptoms today?
+		urinary_question: true,
+		urinary_symptoms: {
+			pain: 0,
+			frequency: 0,
+			urgency: 0,
+			incontinence: 0,
+			slow_stream: 0,
+		},
+
+		// Screen 6 - Have you been experiencing stress since your last phone prompt?
+		associated_symptoms: {
+			stress: 0,
+		},
+
+		// Screen 7 - Where are you currently completing this assessment?
+		patient_location: "home",
+	}
+
+}
