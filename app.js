@@ -6,7 +6,7 @@
 // Database auth params
 var DB_NAME = 'mapp';
 var DB_USERNAME = 'root';
-var DB_PASSWORD = 'AcrossinG1492';
+var DB_PASSWORD = 'dbA29$';
 var DB_PORT = 3306;
 
 /* Initialize Sequelize and connect to database */
