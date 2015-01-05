@@ -2,8 +2,8 @@
 	"dev": {
 		"driver": "mysql",
 		"user": "root",
-		"database": "tutorial",
-		"password": "AcrossinG1492"
+		"database": "mapp",
+		"password": "dbA29$"
 	},
 
 	"production": {

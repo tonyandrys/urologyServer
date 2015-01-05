@@ -2,7 +2,6 @@
 
 {
 	metadata: {
-		mapp_id: 'str',
 		survey_start: 'datetime',
 		survey_end: 'datetime',
 	},
@@ -13,12 +12,12 @@
 
 		// Screen 2 - Rate your pain for each part of the body...
 		pain_assessment: {
-			head: 0,
-			body: 0,
-			perineum: 0,
-			lower_extremity: 0,
-			upper_extremity: 0,
-			back: 0,
+			area_head: 0,
+			area_body: 0,
+			area_perineum: 0,
+			area_le: 0,
+			area_ue: 0,
+			area_back: 0,
 		},
 
 		// Screen 3 - Is your pain affecting your daily activities?
