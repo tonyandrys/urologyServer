@@ -115,6 +115,12 @@ var Submission = sequelize.define('submission', {
 			Submission.findAll({}, {raw:true})
 			.success(onSuccess).error(onError);
 		},
+		retrieveById: function(id, onSuccess, onError) {
+			Submission.find({where: {id: id}}, {raw: true})
+			.success(onSuccess).error(onError);
+		},
+		// FIXME: Method is broken until a Patient.mapp_id --> Submission FOREIGN KEY relation exists.
+		// Use retrieveById in the meantime.
 		retrieveByMappId: function(mapp_id, onSuccess, onError) {
 			Submission.find({where: {mapp_id: mapp_id}}, {raw:true})
 			.success(onSuccess).error(onError);
@@ -185,17 +191,16 @@ router.route('/submissions')
 })
 
 /**
- * ROUTES: /submissions/:mapp_id
+ * ROUTES: /submissions/:id
  **/
-router.route('/submissions/:mapp_id')
+router.route('/submissions/:id')
 .get(function(req, res) {
 	var submission = Submission.build();
-	// FIXME: This doesn't search correctly.
-	submission.retrieveByMappId(req.params.mapp_id, function(submissions) {
+	submission.retrieveById(req.params.id, function(submissions) {
 		if (submissions) {
 			res.json(submissions);
 		} else {
-			res.send(401, "No submissions match MAPP ID.");
+			res.send(401, "No submissions found.");
 		}
 	}, function(error) {
 		res.send("No submissions found.");
