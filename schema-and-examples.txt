@@ -1,0 +1,20 @@
+======
+Models
+======
+
+Patient:
+    mapp_id (String - anonymous identifier for each patient)
+    authcode (String - some sort of authentication string we may or may not need)
+
+=============================
+Request examples (using cURL)
+=============================
+
+- POSTing a new Patient:
+curl -i -H "Accept: application/json" -X POST -d "mapp_id=<some_string>&authcode=<some_string>" http://tonyandrys.com:8080/api/patient
+
+- GETting all Patients:
+curl -i -H "Accept: application/json" http://tonyandrys.com:8080/api/patients
+
+- GETting a specific patient by ID (ex: returns patient #1)
+curl -i -H "Accept: application/json" http://tonyandrys.com:8080/api/patients/1
