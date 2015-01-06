@@ -225,7 +225,13 @@ router.route('/patients')
 
 	// pass it to the Patient.add() method to be written to the db
 	patient.add(function(success) {
-		res.json({message: 'New Patient created!'});
+		// random number in [5, 5000] - use to test concurrency
+		var wait_time = (Math.random() * (5001 - 5) + 5);
+		setTimeout(function(callback) {
+			res.json({
+				message: 'New Patient created!',
+				delay: String(wait_time) + 'ms'});
+		}, wait_time);			
 	},
 	function(err) {
 		res.send(err);

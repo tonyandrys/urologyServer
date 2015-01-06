@@ -1,0 +1,14 @@
+{
+	"dev": {
+		"driver": "mysql",
+		"user": "root",
+		"database": "mapp",
+		"password": "dbA29$"
+	},
+
+	"production": {
+		"driver": "mysql",
+		"user": "root",
+		"database": "myapp"
+	}
+}
