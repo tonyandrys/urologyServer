@@ -89,6 +89,37 @@ var Patient = sequelize.define('patient', {
 	}
 });
 
+//  PUSHTOKEN Model
+//  Used for storing device tokens returned from push registration for future use
+var PushToken = sequelize.define('push_token', {
+	user: Sequelize.STRING,
+	token: Sequelize.STRING
+}, {
+	instanceMethods: {
+		retrieveTokenForUser: function(user, onSuccess, onError) {
+			PushToken.find({where: {user: user}}, {raw: true})
+			.success(onSuccess).error(onError);
+		},
+		add: function(onSuccess, onError) {
+			var user = this.user;
+			var token = this.token;
+			console.log("Writing new push token (user=" + user + ", token=" + token + ")");
+			PushToken.build({user: user, token: token})
+				.save()
+				.success(onSuccess).error(onError);
+		},
+		updateTokenByUser: function(user, onSuccess, onError) {
+			var token = this.token;
+			PushToken.update({token: token}, {where: {user: user}})
+				.success(onSuccess).error(onError);
+		},
+		removeByUser: function(user, onSuccess, onError) {
+			PushToken.destroy({where: {user: user}})
+				.success(onSuccess).error(onError);
+		}
+	}
+});
+
 // SURVEY Model
 var Submission = sequelize.define('submission', {
 	survey_start: Sequelize.DATE,
@@ -225,13 +256,9 @@ router.route('/patients')
 
 	// pass it to the Patient.add() method to be written to the db
 	patient.add(function(success) {
-		// random number in [5, 5000] - use to test concurrency
-		var wait_time = (Math.random() * (5001 - 5) + 5);
-		setTimeout(function(callback) {
-			res.json({
-				message: 'New Patient created!',
-				delay: String(wait_time) + 'ms'});
-		}, wait_time);			
+ 		res.json({
+			message: 'New patient created!'
+		})		
 	},
 	function(err) {
 		res.send(err);
@@ -305,6 +332,50 @@ router.route('/patients/:patient_id')
 	})
 })
 
+/**
+ * ROUTES: /push_tokens
+ **/
+router.route('/push_tokens')
+
+// Creates a new PushToken 
+// POST -> http://localhost:8080/api/push_tokens
+.post(function(req, res) {
+	var user = req.body.user;
+	var token = req.body.token;
+
+	// Build a new PushToken instance
+	var pushToken = PushToken.build({user: user, token: token});
+	pushToken.add(function(success) {
+		res.send({
+			'message': 'Push token saved!'
+		});
+	}, 
+
+	function(err) {
+		res.send(err);
+	});
+})
+
+/**
+ * ROUTES: /push_tokens/:user
+ **/
+router.route('/push_tokens/:user')
+
+// Returns a cached token for the user if one exists
+// GET -> http://localhost:8080/api/push_tokens/:user
+.get(function(req, res) {
+	var pushToken = PushToken.build();
+	pushToken.retrieveTokenForUser(req.params.user, function(pushTokens) {
+		if (pushTokens) {
+			res.json(pushTokens);
+		} else {
+			res.send(401, "No push tokens were found for this user.");
+		}
+	}, function(error) {
+		res.send("ERROR: Could not retrieve push token.");
+	})
+})
+
 // Middleware to use for all REST requests
 router.use(function(req, res, next) {
 	// log to console, then handle next request
@@ -313,43 +384,35 @@ router.use(function(req, res, next) {
 });
 
 // ==========================================================================
-// REGISTER ROUTES
+// REGISTER ROUTES 
 // ==========================================================================
 app.use('/api', router);
 
 // ==========================================================================
 // START SERVER
 // ==========================================================================
+
+// TEMP: Uncomment to synchronize any model changes & kick off the server if successful.
+/*syncModels(sequelize, function callback(err, sequelize){
+	if (err) {
+		var errPrint = require('./error_print.js');
+		errPrint.box("FATAL: COULD NOT SYNC MODELS TO DATABASE!", function(err, msg) {
+			if (err) throw err;
+			console.log(msg);
+		})
+
+	} else {
+		app.listen(port);
+		console.log("Server is running on port " + port);
+	}
+});*/
+
 app.listen(port);
 console.log("Server is running on port " + port);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ==========================================================================
+// APP.JS Methods
+// ==========================================================================
 
 /**
  * Constructs a new Patient instance and syncs it to the database.
@@ -428,7 +491,6 @@ function syncModels(sequelize, callback) {
 		.sync({force: true})	// force=true removes all existing tables and recreates them
 		.complete(function(err) {
 			if (!!err) {
-				console.log('ERROR: Models could not be synchronized!');
 				callback(err);
 			} else {
 				callback(null, sequelize);
