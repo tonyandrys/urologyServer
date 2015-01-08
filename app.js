@@ -18,6 +18,7 @@ var bodyParser = require('body-parser');
 var DataTypes = require('sequelize');
 var crypto = require('crypto');
 var Sequelize = require('sequelize');
+var push = require('./push.js'); // push notification handler for SNS
 
 // Initialize Express & bodyParser, configure basic server params
 var app = express();
@@ -333,12 +334,12 @@ router.route('/patients/:patient_id')
 })
 
 /**
- * ROUTES: /push_tokens
+ * ROUTES: /push
  **/
-router.route('/push_tokens')
+router.route('/push')
 
 // Creates a new PushToken 
-// POST -> http://localhost:8080/api/push_tokens
+// POST -> http://localhost:8080/api/push
 .post(function(req, res) {
 	var user = req.body.user;
 	var token = req.body.token;
@@ -357,12 +358,21 @@ router.route('/push_tokens')
 })
 
 /**
- * ROUTES: /push_tokens/:user
+ * ROUTES: /push/register
  **/
-router.route('/push_tokens/:user')
+ // Registers a push token with Amazon SNS
+ // POST -> http://localhost:8080/api/push/register
+//router.route('/push/register')
+app.post('/push/register', push.register);			// Control is passed directly to the module in push.js
+													// FIXME: Figure out how to implement this using router.route()
+
+/**
+ * ROUTES: /push/get_token/:user
+ **/
+router.route('/push/get_token/:user')
 
 // Returns a cached token for the user if one exists
-// GET -> http://localhost:8080/api/push_tokens/:user
+// GET -> http://localhost:8080/api/push/get_token/:user
 .get(function(req, res) {
 	var pushToken = PushToken.build();
 	pushToken.retrieveTokenForUser(req.params.user, function(pushTokens) {
