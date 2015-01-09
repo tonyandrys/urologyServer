@@ -36,10 +36,13 @@ myApp.on('userAdded', function(endpointArn, deviceId) {
 // Publically exposed function
 // Receives request and response objects - used by app.js
 exports.register = function(req, res) {
-	var deviceId = req.body['deviceId'];
-	console.log('\nPush.js] Registering user with deviceId: ' + deviceId);
 
-	// Add the user to SNS
+	// When we receive a POST, extract the device_id and platform values from the data.
+	var deviceId = req.body['device_id'];
+	var platform = req.body['platform'];
+	console.log('\nPush.js] Attempting to register user with deviceId: ' + deviceId);
+
+	// Try to add this device to SNS...
 	myApp.addUser(deviceId, null, function(err, endpointArn) {
 		// Check if SNS returned an error
 		if (err) {
